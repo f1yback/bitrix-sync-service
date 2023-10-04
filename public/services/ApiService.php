@@ -82,7 +82,7 @@ class ApiService
      */
     private function respond(string $data, string $message)
     {
-        $decoded = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
         if (!empty($decoded) && (int)$decoded['status'] === self::STATUS_SUCCESS) {
             return $decoded;
