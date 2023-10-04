@@ -22,6 +22,7 @@ use yii\redis\Cache;
  */
 class ApiService
 {
+    private const STATUS_SUCCESS = 200;
     private const DEFAULT_CACHE_LIFETIME = 3500;
     private const BASE_URL = 'https://signadmi789.4logist.com/api/';
     private const WEBHOOK_SECRET = 'x40rlo1s';
@@ -71,6 +72,26 @@ class ApiService
     }
 
     /**
+     * Gets API response or throws specified error
+     *
+     * @param string $data
+     * @param string $message
+     * @return mixed
+     * @throws ApiException
+     * @throws JsonException
+     */
+    private function respond(string $data, string $message)
+    {
+        $decoded = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+
+        if (!empty($decoded) && (int)$decoded['status'] === self::STATUS_SUCCESS) {
+            return $decoded;
+        }
+
+        throw new ApiException($message);
+    }
+
+    /**
      * Gets auth headers
      *
      * @return array
@@ -92,8 +113,7 @@ class ApiService
         return $this->redis->getOrSet(RedisKey::API_KEY->value, function () {
             if ($response = $this->send(ApiMethod::TOKEN->value, HttpMethod::POST->value, $this->authParams)) {
                 $decodedData = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
-                return $decodedData['access_token'] ??
-                    throw new ApiException(ApiExceptionMessage::NO_TOKEN->value);
+                return $decodedData['access_token'] ?? throw new ApiException(ApiExceptionMessage::NO_TOKEN->value);
             }
             throw new ApiException(ApiExceptionMessage::NO_TOKEN->value);
         }, self::DEFAULT_CACHE_LIFETIME);
@@ -109,17 +129,27 @@ class ApiService
      */
     public function subscribeWebhook(): array
     {
-        $subscribe = $this->send(
-            ApiMethod::SUBSCRIBE->value,
-            HttpMethod::POST->value,
-            ['url' => self::WEBHOOK_URL, 'secret' => self::WEBHOOK_SECRET],
-            $this->headers()
+        return $this->respond(
+            $this->send(
+                ApiMethod::SUBSCRIBE->value,
+                HttpMethod::POST->value,
+                ['url' => self::WEBHOOK_URL, 'secret' => self::WEBHOOK_SECRET],
+                $this->headers()
+            ),
+            ApiExceptionMessage::NO_SUBSCRIBE->value
         );
+    }
 
-        if ($subscribe) {
-            return json_decode($subscribe, true, 512, JSON_THROW_ON_ERROR);
-        }
-
-        throw new ApiException(ApiExceptionMessage::NO_SUBSCRIBE->value);
+    public function getClients(int $page = 1, int $perPage = 1000)
+    {
+        return $this->respond(
+            $this->send(
+                ApiMethod::CLIENTS->value,
+                HttpMethod::GET->value,
+                ['page' => $page, 'perPage' => $perPage],
+                $this->headers()
+            ),
+            ApiExceptionMessage::NO_SUBSCRIBE->value
+        );
     }
 }

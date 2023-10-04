@@ -11,4 +11,5 @@ enum ApiExceptionMessage: string
 {
     case NO_TOKEN = 'API token null response';
     case NO_SUBSCRIBE = 'Callback webhook setup error';
+    case NO_CLIENTS = 'Get clients API response error';
 }
