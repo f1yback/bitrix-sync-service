@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace app\enums;
+
+/**
+ * Redis storage keys
+ */
+enum RedisKey: string
+{
+    case API_KEY = 'api_key';
+}

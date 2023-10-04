@@ -1,5 +1,8 @@
 <?php
 
+use yii\redis\Connection;
+use yii\web\Application;
+
 /**
  * This class only exists here for IDE (PHPStorm/Netbeans/...) autocompletion.
  * This file is never included anywhere.
@@ -13,9 +16,13 @@
  */
 class Yii {
     /**
-     * @var \yii\web\Application|\yii\console\Application|__Application
+     * @var Application|\yii\console\Application|__Application
      */
     public static $app;
+    /**
+     * @var Connection
+     */
+    public static $redis;
 }
 
 /**
