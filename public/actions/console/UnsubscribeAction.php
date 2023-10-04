@@ -9,20 +9,20 @@ use JsonException;
 use yii\httpclient\Exception;
 
 /**
- * Gets clients from API
+ * Subscribe webhook action
  */
-class GetClientsAction extends BaseAction
+class UnsubscribeAction extends BaseAction
 {
     /**
-     * Runs get client action
+     * Runs unsubscribe action
      *
      * @return void
      * @throws JsonException
      * @throws ApiException
      * @throws Exception
      */
-    public function run()
+    public function run(): void
     {
-        $this->controller->stdout(print_r($this->apiService->getClients(), true) . PHP_EOL);
+        $this->controller->stdout(print_r($this->apiService->unsubscribeWebhook(), true) . PHP_EOL);
     }
 }

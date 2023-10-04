@@ -27,6 +27,7 @@ class ApiService
     private const BASE_URL = 'https://signadmi789.4logist.com/api/';
     private const WEBHOOK_SECRET = 'x40rlo1s';
     private const WEBHOOK_URL = 'https://210713.fornex.cloud/';
+
     /**
      * @var Request
      */
@@ -62,7 +63,13 @@ class ApiService
      */
     private function send(string $url, string $type, array $data = [], array $headers = null): ?string
     {
-        $request = $this->request->setUrl($url)->setMethod($type)->setData($data)->setFormat(Client::FORMAT_JSON);
+        $request = $this->request->setUrl($url)->setMethod($type);
+
+        if ($type === HttpMethod::POST->value) {
+            $request->setData($data)->setFormat(Client::FORMAT_JSON);
+        } else {
+            $request->setUrl("{$url}?" . http_build_query($data));
+        }
 
         if ($headers) {
             $request->setHeaders($headers);
@@ -76,11 +83,11 @@ class ApiService
      *
      * @param string $data
      * @param string $message
-     * @return mixed
+     * @return array
      * @throws ApiException
      * @throws JsonException
      */
-    private function respond(string $data, string $message)
+    private function respond(string $data, string $message): array
     {
         $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
@@ -140,7 +147,37 @@ class ApiService
         );
     }
 
-    public function getClients(int $page = 1, int $perPage = 1000)
+    /**
+     * Unsubscribes webhook
+     *
+     * @return array
+     * @throws ApiException
+     * @throws Exception
+     * @throws JsonException
+     */
+    public function unsubscribeWebhook(): array
+    {
+        return $this->respond(
+            $this->send(
+                url: ApiMethod::UNSUBSCRIBE->value,
+                type: HttpMethod::POST->value,
+                headers: $this->headers()
+            ),
+            ApiExceptionMessage::NO_SUBSCRIBE->value
+        );
+    }
+
+    /**
+     * Gets clients
+     *
+     * @param int $page
+     * @param int $perPage
+     * @return array
+     * @throws ApiException
+     * @throws Exception
+     * @throws JsonException
+     */
+    public function getClients(int $page = 1, int $perPage = 100): array
     {
         return $this->respond(
             $this->send(

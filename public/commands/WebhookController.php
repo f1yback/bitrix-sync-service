@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\commands;
 
 use app\actions\console\SubscribeAction;
+use app\actions\console\UnsubscribeAction;
 use yii\console\Controller;
 
 /**
@@ -20,7 +21,8 @@ class WebhookController extends Controller
     public function actions(): array
     {
         return [
-            'subscribe' => SubscribeAction::class
+            'subscribe' => SubscribeAction::class,
+            'unsubscribe' => UnsubscribeAction::class
         ];
     }
 }
