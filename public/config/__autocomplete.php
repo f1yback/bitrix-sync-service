@@ -1,5 +1,6 @@
 <?php
 
+use app\components\Api;
 use yii\redis\Connection;
 use yii\web\Application;
 
@@ -31,6 +32,7 @@ class Yii {
  * 
  */
 class __Application {
+    public Api $api;
 }
 
 /**

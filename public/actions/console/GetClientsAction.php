@@ -17,11 +17,10 @@ class GetClientsAction extends BaseAction
      * Runs get client action
      *
      * @return void
-     * @throws JsonException
      * @throws ApiException
-     * @throws Exception
+     * @throws Exception|JsonException
      */
-    public function run()
+    public function run(): void
     {
         $this->controller->stdout(print_r($this->apiService->getClients(), true) . PHP_EOL);
     }

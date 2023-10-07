@@ -17,9 +17,8 @@ class SubscribeAction extends BaseAction
      * Runs subscribe action
      *
      * @return void
-     * @throws JsonException
      * @throws ApiException
-     * @throws Exception
+     * @throws Exception|JsonException
      */
     public function run(): void
     {

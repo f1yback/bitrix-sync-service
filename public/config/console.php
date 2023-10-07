@@ -9,13 +9,18 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
-    'controllerNamespace' => 'app\commands',
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm' => '@vendor/npm-asset',
-        '@tests' => '@app/tests',
+    'bootstrap' => [
+        'log',
     ],
+    'controllerNamespace' => 'app\commands',
+    'aliases' => array_merge(
+        [
+            '@bower' => '@vendor/bower-asset',
+            '@npm' => '@vendor/npm-asset',
+            '@tests' => '@app/tests',
+        ],
+        require 'aliases.php'
+    ),
     'components' => [
         'cache' => [
             'class' => Cache::class,
@@ -32,6 +37,7 @@ $config = [
         'redis' => require 'redis.php',
     ],
     'params' => $params,
+    'container' => require 'di_container.php',
 ];
 
 if (YII_ENV_DEV) {

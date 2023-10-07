@@ -32,6 +32,8 @@ class SiteController extends Controller
      */
     public function actionIndex(): Response
     {
-        return $this->asJson($this->aggregatorService->log($this->aggregatorService->getIncomingData()));
+        return $this->asJson(
+            $this->aggregatorService->log($this->aggregatorService->getIncomingData(), 'debug.log')
+        );
     }
 }

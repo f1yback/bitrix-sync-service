@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\commands;
 
+use app\actions\console\GetClientAction;
 use app\actions\console\GetClientsAction;
 use yii\console\Controller;
 
@@ -20,7 +21,8 @@ class SyncController extends Controller
     public function actions(): array
     {
         return [
-            'clients' => GetClientsAction::class
+            'clients' => GetClientsAction::class,
+            'client' => GetClientAction::class,
         ];
     }
 }
