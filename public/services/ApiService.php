@@ -11,6 +11,8 @@ use app\enums\HttpMethod;
 use app\enums\RedisKey;
 use app\exceptions\ApiException;
 use JsonException;
+use Throwable;
+use yii\base\InvalidConfigException;
 use yii\httpclient\Exception;
 use yii\redis\Cache;
 
@@ -25,10 +27,12 @@ class ApiService
     /**
      * @param Cache $redis
      * @param Api $api
+     * @param AggregatorService $aggregatorService
      */
     public function __construct(
         private Cache $redis,
         private Api $api,
+        private AggregatorService $aggregatorService,
     ) {}
 
     /**
@@ -43,11 +47,34 @@ class ApiService
     {
         $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 
-        if (!empty($decoded) && (int)$decoded['status'] === self::STATUS_SUCCESS) {
+        if (!empty($decoded['status']) && (int)$decoded['status'] === self::STATUS_SUCCESS) {
             return $decoded;
         }
 
         throw new ApiException($message);
+    }
+
+    /**
+     * Gets API batch response
+     *
+     * @param string $data
+     * @param string $request
+     * @return array
+     * @throws JsonException
+     */
+    private function batchRespond(string $data, string $request): array
+    {
+        $decoded = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        foreach ($decoded as $client_id => $responseElem) {
+            try {
+                json_decode($responseElem, true, 512, JSON_THROW_ON_ERROR);
+            } catch (Throwable) {
+                $this->aggregatorService->logBrokenRequest(implode('/', [$request, $client_id]), (string)$responseElem);
+            }
+        }
+
+        return $decoded;
     }
 
     /**
@@ -142,23 +169,21 @@ class ApiService
     /**
      * Gets client by id
      *
-     * @param int $id
-     * @param int $page
-     * @param int $perPage
+     * @param array $idColumn
      * @return array
-     * @throws ApiException
-     * @throws Exception|JsonException
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws JsonException
      */
-    public function getClient(int $id, int $page = 1, int $perPage = 100): array
+    public function getClient(array $idColumn): array
     {
-        return $this->respond(
-            $this->api->send(
-                implode('/', [ApiMethod::CLIENTS->value, $id]),
-                HttpMethod::GET->value,
-                ['page' => $page, 'perPage' => $perPage],
-                $this->headers()
+        return $this->batchRespond(
+            $this->api->batchGet(
+                url: ApiMethod::CLIENTS->value,
+                data: $idColumn,
+                headers: $this->headers()
             ),
-            ApiExceptionMessage::NO_CLIENT->value
+            ApiMethod::CLIENTS->value
         );
     }
 }

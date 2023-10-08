@@ -2,7 +2,8 @@
 
 use app\models\User;
 use yii\caching\CacheInterface;
-use yii\debug\Module;
+use yii\debug\Module as Debug;
+use yii\gii\Module as Gii;
 use yii\log\FileTarget;
 use yii\redis\Cache;
 use yii\symfonymailer\Mailer;
@@ -51,6 +52,11 @@ $config = [
         ],
         'db' => $db,
         'redis' => require 'redis.php',
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'enableStrictParsing' => true,
+        ]
     ],
     'container' => [
         'definitions' => [
@@ -65,12 +71,13 @@ $config = [
 if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
-        'class' => Module::class,
+        'class' => Debug::class,
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
-        'class' => \yii\gii\Module::class,
+        'class' => Gii::class,
+        'allowedIPs' => ['*']
     ];
 }
 

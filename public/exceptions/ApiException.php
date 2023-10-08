@@ -10,4 +10,13 @@ use Exception;
  * API response exception
  */
 class ApiException extends Exception
-{}
+{
+    /**
+     * @var string
+     */
+    public string $request;
+    /**
+     * @var string
+     */
+    public string $response;
+}

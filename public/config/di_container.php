@@ -2,6 +2,7 @@
 
 use app\components\Api;
 use app\components\Bitrix;
+use yii\db\Connection;
 
 $params = require 'params.php';
 
@@ -18,5 +19,6 @@ return [
             'class' => Bitrix::class,
             'url' => $params['bitrix']['webhook']
         ],
+        Connection::class => require 'db.php'
     ]
 ];

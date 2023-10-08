@@ -1,6 +1,10 @@
 <?php
 
+use yii\debug\Module as Debug;
+use yii\gii\Module as Gii;
 use yii\log\FileTarget;
+use yii\queue\LogBehavior;
+use yii\queue\redis\Queue;
 use yii\redis\Cache;
 
 $params = require __DIR__ . '/params.php';
@@ -11,6 +15,7 @@ $config = [
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
         'log',
+        'queue'
     ],
     'controllerNamespace' => 'app\commands',
     'aliases' => array_merge(
@@ -22,6 +27,10 @@ $config = [
         require 'aliases.php'
     ),
     'components' => [
+        'queue' => [
+            'class' => Queue::class,
+            'as log' => LogBehavior::class,
+        ],
         'cache' => [
             'class' => Cache::class,
         ],
@@ -43,11 +52,11 @@ $config = [
 if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
-        'class' => 'yii\gii\Module',
+        'class' => Gii::class,
     ];
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
-        'class' => 'yii\debug\Module',
+        'class' => Debug::class,
     ];
 }
 

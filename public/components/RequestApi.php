@@ -8,16 +8,17 @@ use app\enums\HttpMethod;
 use app\exceptions\ApiException;
 use app\services\AggregatorService;
 use JsonException;
-use yii\base\Component;
+use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
+use yii\httpclient\CurlTransport;
 use yii\httpclient\Exception;
 use yii\httpclient\Request;
 
 /**
  * Base RequestApi component class
  */
-abstract class RequestApi extends Component
+abstract class RequestApi extends BaseObject
 {
     /**
      * @var string
@@ -38,16 +39,16 @@ abstract class RequestApi extends Component
         protected Client $client,
         protected AggregatorService $aggregatorService,
         array $config = []
-    )
-    {
+    ) {
         parent::__construct($config);
 
         $this->client->baseUrl = $this->url;
+        $this->client->setTransport(CurlTransport::class);
         $this->request = $this->client->createRequest();
     }
 
     /**
-     * Request data
+     * Send request to API endpoint
      *
      * @param string $url
      * @param string $type
@@ -65,7 +66,13 @@ abstract class RequestApi extends Component
         if ($type === HttpMethod::POST->value) {
             $request->setData($data)->setFormat(Client::FORMAT_JSON);
         } else {
-            $request->setUrl("{$url}?" . http_build_query($data));
+            $request->setUrl(
+                implode('', [
+                    $url,
+                    '?',
+                    http_build_query($data)
+                ])
+            );
         }
 
         if ($headers) {
@@ -81,13 +88,66 @@ abstract class RequestApi extends Component
                 '[payload]: ' . json_encode($data, JSON_THROW_ON_ERROR),
                 '[statusCode]: ' . $response->getStatusCode(),
                 '[content]: ' . PHP_EOL . $response->getContent(),
-            ]), static::FILE
+            ]),
+            static::FILE
         );
 
-        if($response->getStatusCode() === '200') {
+        if ($response->getStatusCode() === '200') {
             return $response->getContent();
         }
 
         throw new ApiException("Error. Response status code is {$response->statusCode}");
+    }
+
+    /**
+     * Batch GET from API
+     *
+     * @param string $url
+     * @param array $data
+     * @param array|null $headers
+     * @return bool|string
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws JsonException
+     */
+    public function batchGet(string $url, array $data = [], array $headers = null): bool|string
+    {
+        $batch = [];
+
+        foreach ($data as $id) {
+            $batch[$id] = $this->client->get(implode('/', [
+                $url,
+                $id
+            ]));
+
+            if ($headers) {
+                $batch[$id]->setHeaders($headers);
+            }
+        }
+
+        $responses = $this->client->batchSend($batch);
+
+        $responseContent = [];
+
+        foreach ($responses as $id => $response) {
+            $this->aggregatorService->log(
+                implode(PHP_EOL, [
+                    "[requestUrl]: $url",
+                    '[type]: ' . HttpMethod::GET->value,
+                    '[payload]: ' . $id,
+                    '[statusCode]: ' . $response->getStatusCode(),
+                    '[content]: ' . PHP_EOL . $response->getContent(),
+                ]),
+                static::FILE
+            );
+
+            if ($response->getStatusCode() === '200') {
+                $responseContent[$id] = $response->getContent();
+            } else {
+                $responseContent[$id] = false;
+            }
+        }
+
+        return json_encode($responseContent, JSON_THROW_ON_ERROR);
     }
 }

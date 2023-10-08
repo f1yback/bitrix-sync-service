@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace app\commands;
 
+use app\actions\console\BitrixAction;
 use app\actions\console\GetClientAction;
 use app\actions\console\GetClientsAction;
+use app\actions\console\ManagerAction;
 use yii\console\Controller;
 
 /**
@@ -23,6 +25,8 @@ class SyncController extends Controller
         return [
             'clients' => GetClientsAction::class,
             'client' => GetClientAction::class,
+            'bitrix' => BitrixAction::class,
+            'manager' => ManagerAction::class
         ];
     }
 }

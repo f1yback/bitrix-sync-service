@@ -18,10 +18,19 @@ class GetClientsAction extends BaseAction
      *
      * @return void
      * @throws ApiException
-     * @throws Exception|JsonException
+     * @throws Exception
+     * @throws JsonException
      */
     public function run(): void
     {
-        $this->controller->stdout(print_r($this->apiService->getClients(), true) . PHP_EOL);
+        $currentPage = 1;
+
+        $clientsResponse = $this->apiService->getClients($currentPage);
+
+        $pages = $this->aggregatorService->createPages($clientsResponse);
+
+        for ($i = $currentPage; $i <= $pages->lastPage; $i++) {
+            $this->aggregatorService->createGetAllClientsJob($i, $this->aggregatorService, $this->apiService);
+        }
     }
 }
