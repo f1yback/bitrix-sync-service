@@ -41,6 +41,7 @@ class GetAllClientsJob extends BaseObject implements JobInterface
      * @throws JsonException
      * @throws ApiException
      * @throws Exception
+     * @throws \yii\db\Exception
      */
     public function execute($queue): void
     {

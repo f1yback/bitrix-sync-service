@@ -12,4 +12,5 @@ enum Method: string
     case UPDATE = 'crm.company.update';
     case USER_SEARCH = 'user.search';
     case BATCH = 'batch';
+    case TASK = 'tasks.task.add';
 }

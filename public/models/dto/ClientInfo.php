@@ -25,6 +25,10 @@ class ClientInfo extends BaseObject implements ArrayAccess
      */
     public int|null $pricePerUser;
     /**
+     * @var string|null
+     */
+    public string|null $currency;
+    /**
      * @var int|null
      */
     public int|null $paymentPeriodMonth;
@@ -108,5 +112,26 @@ class ClientInfo extends BaseObject implements ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         $this->$offset = null;
+    }
+
+    /**
+     * Gets parsed bitrix client from admin API response
+     *
+     * @param string|int|null $bitrixClient
+     * @return int|null
+     */
+    public static function parseBitrixClient(string|int|null $bitrixClient): ?int
+    {
+        if ((is_string($bitrixClient) && is_numeric($bitrixClient)) || is_int($bitrixClient)) {
+            return (int)$bitrixClient;
+        }
+        if (is_string($bitrixClient) && str_contains($bitrixClient, '4logist.bitrix24.ru')) {
+            $parsedUrlArray = array_filter(explode('/', $bitrixClient), static fn($elem) => !empty($elem));
+            $parsedId = array_pop($parsedUrlArray);
+            if (is_numeric($parsedId) && (int)$parsedId !== 0) {
+                return (int)$parsedId;
+            }
+        }
+        return null;
     }
 }

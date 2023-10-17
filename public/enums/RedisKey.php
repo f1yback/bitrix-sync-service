@@ -10,4 +10,5 @@ namespace app\enums;
 enum RedisKey: string
 {
     case API_KEY = 'api_key';
+    case CLIENT_STATUS = 'client_status_';
 }

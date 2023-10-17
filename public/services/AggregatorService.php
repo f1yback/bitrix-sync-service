@@ -128,9 +128,10 @@ class AggregatorService
     public function createClientInfo(array $clientData): ClientInfo
     {
         return new ClientInfo([
-            'bitrixClient' => $clientData['bitrixClient'],
+            'bitrixClient' => ClientInfo::parseBitrixClient($clientData['bitrixClient']),
             'url' => $clientData['url'],
             'pricePerUser' => $clientData['pricePerUser'],
+            'currency' => $clientData['currency']['code'] ?? null,
             'paymentPeriodMonth' => $clientData['paymentPeriodMonth'],
             'country' => $clientData['country'],
             'paymentTypeId' => $clientData['paymentTypeId'],
@@ -238,6 +239,8 @@ class AggregatorService
                 $transaction?->commit();
                 return true;
             }
+
+            $this->log(json_encode($client->errors), 'client.log');
         }
 
         $transaction?->rollBack();

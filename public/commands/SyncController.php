@@ -8,6 +8,7 @@ use app\actions\console\BitrixAction;
 use app\actions\console\GetClientAction;
 use app\actions\console\GetClientsAction;
 use app\actions\console\ManagerAction;
+use app\actions\console\TaskAction;
 use yii\console\Controller;
 
 /**
@@ -26,7 +27,8 @@ class SyncController extends Controller
             'clients' => GetClientsAction::class,
             'client' => GetClientAction::class,
             'bitrix' => BitrixAction::class,
-            'manager' => ManagerAction::class
+            'manager' => ManagerAction::class,
+            'task' => TaskAction::class
         ];
     }
 }

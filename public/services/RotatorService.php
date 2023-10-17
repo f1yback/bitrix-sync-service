@@ -14,7 +14,7 @@ use yii\db\Expression;
 class RotatorService
 {
     /**
-     * Removes all old logs
+     * Removes all old broken request logs
      *
      * @return void
      */

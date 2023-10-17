@@ -52,11 +52,6 @@ $config = [
         ],
         'db' => $db,
         'redis' => require 'redis.php',
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'enableStrictParsing' => true,
-        ]
     ],
     'container' => [
         'definitions' => [
