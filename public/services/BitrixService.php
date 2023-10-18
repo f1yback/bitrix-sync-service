@@ -121,6 +121,7 @@ class BitrixService
         foreach ($clients as $client) {
             $commands[$client->id] = $this->createTask($client, $type);
             $client->taskCreated = 1;
+            $client->isActive = 0;
 
             if (!$client->save()) {
                 $tx?->rollBack();
@@ -247,8 +248,12 @@ class BitrixService
             return [BitrixField::COMPANY_TYPE->value => $status];
         }
 
-        return strtotime($clientInfo->licenseEndDate) <= time() - 3600*24*3 ?
-            [BitrixField::COMPANY_TYPE->value => BitrixCompanyType::EX_CLIENT->value] : [];
+        if (strtotime($clientInfo->licenseEndDate) <= time() - 3600*24*3) {
+            Client::updateAll(['isActive' => 0], ['bitrixClient' => $clientInfo->bitrixClient]);
+            return [BitrixField::COMPANY_TYPE->value => BitrixCompanyType::EX_CLIENT->value];
+        }
+
+        return [];
     }
 
     /**
@@ -272,7 +277,7 @@ class BitrixService
     public function getStuckClientsMap(): array
     {
         return ArrayHelper::map(
-            Client::find()->with(['manager'])->where(['taskCreated' => 0])->andWhere([
+            Client::find()->with(['manager'])->where(['taskCreated' => 0, 'isActive' => 0])->andWhere([
                 'OR',
                 [
                     '>=',
