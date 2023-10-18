@@ -54,6 +54,9 @@ class GetClientJob extends BaseObject implements JobInterface
             try {
                 if ($client) {
                     $clientData = json_decode($client, true, 512, JSON_THROW_ON_ERROR);
+                    if (!$clientData['data']) {
+                        throw new JsonException();
+                    }
                 } else {
                     throw new JsonException();
                 }
