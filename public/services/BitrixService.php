@@ -192,12 +192,12 @@ class BitrixService
     /**
      * Gets manager id from Bitrix24
      *
-     * @param string $email
+     * @param ?string $email
      * @return int|null
      */
-    public function getManagerByEmail(string $email): ?int
+    public function getManagerByEmail(?string $email): ?int
     {
-        return Manager::findOne(['email' => $email])?->id;
+        return $email ? Manager::findOne(['email' => $email])?->id : null;
     }
 
     /**
