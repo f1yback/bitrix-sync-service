@@ -130,25 +130,39 @@ abstract class RequestApi extends BaseObject
         $responseContent = [];
 
         foreach ($responses as $id => $response) {
-            $responseContent[$id] = $response->getContent();
-            /*$this->aggregatorService->log(
-                implode(PHP_EOL, [
-                    "[requestUrl]: $url",
-                    '[type]: ' . HttpMethod::GET->value,
-                    '[payload]: ' . $id,
-                    '[statusCode]: ' . $response->getStatusCode(),
-                    '[content]: ' . PHP_EOL . $response->getContent(),
-                ]),
-                static::FILE
-            );
+            try {
+                $code = $response->getStatusCode();
 
-            if ($response->getStatusCode() === '200') {
-                $responseContent[$id] = $response->getContent();
-            } else {
-                $responseContent[$id] = false;
-            }*/
+                $this->aggregatorService->log(
+                    implode(PHP_EOL, [
+                        "[requestUrl]: $url",
+                        '[type]: ' . HttpMethod::GET->value,
+                        '[payload]: ' . $id,
+                        '[statusCode]: ' . $code,
+                        '[content]: ' . PHP_EOL . $response->getContent(),
+                    ]),
+                    static::FILE
+                );
+
+                if ($code === '200') {
+                    $responseContent[$id] = $response->getContent();
+                } else {
+                    $responseContent[$id] = false;
+                }
+            } catch (Exception $httpException) {
+                $this->aggregatorService->log(
+                    implode(PHP_EOL, [
+                        "[requestUrl]: $url",
+                        '[type]: ' . HttpMethod::GET->value,
+                        '[payload]: ' . $id,
+                        '[statusCode]: ' . 'UNKNOWN',
+                        '[content]: ' . PHP_EOL . $response->getContent(),
+                        '[error]: ' . PHP_EOL . $httpException->getMessage()
+                    ]),
+                    static::FILE
+                );
+            }
         }
-
         return json_encode($responseContent, JSON_THROW_ON_ERROR);
     }
 }
