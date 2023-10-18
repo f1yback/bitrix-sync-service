@@ -130,7 +130,8 @@ abstract class RequestApi extends BaseObject
         $responseContent = [];
 
         foreach ($responses as $id => $response) {
-            $this->aggregatorService->log(
+            $responseContent[$id] = $response->getContent();
+            /*$this->aggregatorService->log(
                 implode(PHP_EOL, [
                     "[requestUrl]: $url",
                     '[type]: ' . HttpMethod::GET->value,
@@ -145,7 +146,7 @@ abstract class RequestApi extends BaseObject
                 $responseContent[$id] = $response->getContent();
             } else {
                 $responseContent[$id] = false;
-            }
+            }*/
         }
 
         return json_encode($responseContent, JSON_THROW_ON_ERROR);
