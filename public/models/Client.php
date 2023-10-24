@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace app\models;
 
-use app\services\BitrixService;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 

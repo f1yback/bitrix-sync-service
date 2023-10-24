@@ -1,6 +1,5 @@
 <?php
 
-use app\models\User;
 use yii\caching\CacheInterface;
 use yii\debug\Module as Debug;
 use yii\gii\Module as Gii;
@@ -28,10 +27,6 @@ $config = [
         ],
         'cache' => [
             'class' => Cache::class,
-        ],
-        'user' => [
-            'identityClass' => User::class,
-            'enableAutoLogin' => true,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',

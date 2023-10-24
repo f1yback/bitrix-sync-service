@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\models\dto;
 
 use ArrayAccess;
+use Yii;
 use yii\base\BaseObject;
 
 /**
@@ -21,9 +22,9 @@ class ClientInfo extends BaseObject implements ArrayAccess
      */
     public string|null $url;
     /**
-     * @var int|null
+     * @var float|null
      */
-    public int|null $pricePerUser;
+    public float|null $pricePerUser;
     /**
      * @var string|null
      */
@@ -125,7 +126,7 @@ class ClientInfo extends BaseObject implements ArrayAccess
         if ((is_string($bitrixClient) && is_numeric($bitrixClient)) || is_int($bitrixClient)) {
             return (int)$bitrixClient;
         }
-        if (is_string($bitrixClient) && str_contains($bitrixClient, '4logist.bitrix24.ru')) {
+        if (is_string($bitrixClient) && str_contains($bitrixClient, Yii::$app->params['bitrix']['domain'])) {
             $parsedUrlArray = array_filter(explode('/', $bitrixClient), static fn($elem) => !empty($elem));
             $parsedId = array_pop($parsedUrlArray);
             if (is_numeric($parsedId) && (int)$parsedId !== 0) {

@@ -4,7 +4,7 @@ use yii\redis\Connection;
 
 return [
     'class' => Connection::class,
-    'hostname' => 'bx-sync-service-redis',
+    'hostname' => 'localhost',
     'port' => 6379,
     'database' => 0,
 ];

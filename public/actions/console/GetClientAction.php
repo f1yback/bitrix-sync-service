@@ -18,12 +18,16 @@ class GetClientAction extends BaseAction
      */
     public function run(): void
     {
-        $idColumn = Client::find()->select('id')->column();
+        $clientsCount = Client::find()->count();
 
-        $this->aggregatorService->createGetClientJob(
-            $idColumn,
-            $this->aggregatorService,
-            $this->apiService
-        );
+        for ($i = 0; $i < $clientsCount; $i+=100) {
+            $idColumn = Client::find()->offset($i)->limit(100)->select('id')->column();
+
+            $this->aggregatorService->createGetClientJob(
+                $idColumn,
+                $this->aggregatorService,
+                $this->apiService
+            );
+        }
     }
 }

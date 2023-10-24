@@ -312,6 +312,8 @@ class BitrixService
     }
 
     /**
+     * Creates task query for Bitrix24
+     *
      * @param Client $client
      * @param int $type
      * @return string

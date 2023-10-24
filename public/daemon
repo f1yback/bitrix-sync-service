@@ -1,0 +1,10 @@
+[Unit]
+Description=Redis Yii listener
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /path/to/project/root/yii queue/listen
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

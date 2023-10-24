@@ -13,6 +13,7 @@ return [
         'webhook_url' => 'https://210713.fornex.cloud/'
     ],
     'bitrix' => [
-        'webhook' => 'https://4logist.bitrix24.ru/rest/583/4fe2fyp4oicpjoae/'
+        'webhook' => 'https://4logist.bitrix24.ru/rest/583/4fe2fyp4oicpjoae/',
+        'domain' => '4logist.bitrix24.ru'
     ],
 ];
