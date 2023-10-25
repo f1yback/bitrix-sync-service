@@ -1,5 +1,6 @@
 <?php
 
+use app\models\ApiUser;
 use yii\caching\CacheInterface;
 use yii\debug\Module as Debug;
 use yii\gii\Module as Gii;
@@ -45,16 +46,21 @@ $config = [
                 ],
             ],
         ],
+        'user' => [
+            'identityClass' => ApiUser::class
+        ],
         'db' => $db,
         'redis' => require 'redis.php',
     ],
-    'container' => [
-        'definitions' => [
-            CacheInterface::class => [
-                'class' => Cache::class
+    'container' => array_merge([
+            'definitions' => [
+                CacheInterface::class => [
+                    'class' => Cache::class
+                ]
             ]
-        ]
-    ],
+        ],
+        require 'di_container.php'
+    ),
     'params' => $params,
 ];
 
