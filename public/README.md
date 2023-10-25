@@ -3,6 +3,7 @@
 1) PHP 8.1+
 2) MySQL 8+
 3) Redis 5+
+4) nginx 1.20+
 
 **Установка:**
 
@@ -19,8 +20,9 @@
 **Перед выходом в продакшен:**
 
 1) Настроить `config/params.php`:
-   1) если нужно поменять вебхук битрикс24
-   2) если нужно поменять креды приложения
+   1) указать новый (если нужно) вебхук битрикс24
+   2) указать новые (если нужно) креды приложения
+   3) **указать свой вебхук сервера (обязательно)**
 2) Установить Redis и убедиться, что он активен:
    1) `sudo apt install redis`
    2) `sudo systemctl status redis`
@@ -34,14 +36,15 @@
    6) `sudo systemctl start redis-listener`
    7) проверяем, что демон работает - `sudo systemctl status redis-listener`
 4) Запустить один раз `php yii sync/manager`
+5) Запустить один раз `php yii webhook/subscribe`
 
 **Устанавливаем задачи cron:**
 
 1) `50 23 * * * /usr/bin/php -f /path/to/project/root/yii log/rotate &`
-2) `* * * * * /usr/bin/php -f /path/to/project/root/yii sync/clients &`
-3) `*/5 * * * * /usr/bin/php -f /path/to/project/root/yii sync/client &`
+2) `*/30 * * * * /usr/bin/php -f /path/to/project/root/yii sync/clients &`
+3) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/client &`
 4) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/manager &`
-5) `*/5 * * * * /usr/bin/php -f /path/to/project/root/yii sync/bitrix &`
+5) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/bitrix &`
 6) `50 23 * * * /usr/bin/php -f /path/to/project/root/yii sync/task &`
 
 **Дополнительно:**
