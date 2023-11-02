@@ -6,6 +6,7 @@ namespace app\commands\jobs;
 
 use app\services\AggregatorService;
 use app\services\ApiService;
+use app\services\BitrixService;
 use JsonException;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
@@ -20,13 +21,17 @@ class GetClientJob extends BaseObject implements JobInterface
     /**
      * @param int[] $idColumn
      * @param AggregatorService $aggregatorService
+     * @param BitrixService $bitrixService
      * @param ApiService $apiService
+     * @param bool $createBitrixJob
      * @param array $config
      */
     public function __construct(
         public array $idColumn,
         public AggregatorService $aggregatorService,
+        public BitrixService $bitrixService,
         public ApiService $apiService,
+        public bool $createBitrixJob = false,
         array $config = [],
     ) {
         parent::__construct($config);
@@ -64,10 +69,17 @@ class GetClientJob extends BaseObject implements JobInterface
                 continue;
             }
 
-            $this->aggregatorService->saveClientFromInfo(
+            $client = $this->aggregatorService->saveClientFromInfo(
                 $client_id,
                 $this->aggregatorService->createClientInfo($clientData['data'])
             );
+
+            if ($this->createBitrixJob) {
+                $this->bitrixService->createBitrixSyncJob(
+                    $this->bitrixService->createBatchCommand([$client]),
+                    $this->bitrixService
+                );
+            }
         }
     }
 }

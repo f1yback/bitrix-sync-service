@@ -167,14 +167,24 @@ class AggregatorService
      * @param int[] $idColumn
      * @param AggregatorService $aggregatorService
      * @param ApiService $apiService
+     * @param BitrixService $bitrixService
+     * @param bool $createBitrixJob
      * @return void
      */
     public function createGetClientJob(
         array $idColumn,
         AggregatorService $aggregatorService,
-        ApiService $apiService
+        ApiService $apiService,
+        BitrixService $bitrixService,
+        bool $createBitrixJob = false
     ): void {
-        $this->queue->push(new GetClientJob($idColumn, $aggregatorService, $apiService));
+        $this->queue->push(new GetClientJob(
+            $idColumn,
+            $aggregatorService,
+            $bitrixService,
+            $apiService,
+            $createBitrixJob
+        ));
     }
 
     /**
@@ -225,10 +235,10 @@ class AggregatorService
      *
      * @param int $id
      * @param ClientInfo $clientInfo
-     * @return bool
+     * @return Client|null
      * @throws Exception
      */
-    public function saveClientFromInfo(int $id, ClientInfo $clientInfo): bool
+    public function saveClientFromInfo(int $id, ClientInfo $clientInfo): ?Client
     {
         $transaction = $this->connection->beginTransaction(Transaction::SERIALIZABLE);
 
@@ -237,7 +247,7 @@ class AggregatorService
 
             if ($client->save()) {
                 $transaction?->commit();
-                return true;
+                return $client;
             }
 
             $this->log(json_encode($client->errors), 'client.log');
@@ -245,7 +255,7 @@ class AggregatorService
 
         $transaction?->rollBack();
 
-        return false;
+        return null;
     }
 
     /**

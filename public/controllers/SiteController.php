@@ -6,6 +6,7 @@ namespace app\controllers;
 
 use app\services\AggregatorService;
 use app\services\ApiService;
+use app\services\BitrixService;
 use Exception;
 use Symfony\Component\BrowserKit\Exception\JsonException;
 use yii\base\Response;
@@ -18,6 +19,7 @@ class SiteController extends Controller
      * @param $id
      * @param $module
      * @param AggregatorService $aggregatorService
+     * @param BitrixService $bitrixService
      * @param ApiService $apiService
      * @param array $config
      */
@@ -25,6 +27,7 @@ class SiteController extends Controller
         $id,
         $module,
         private AggregatorService $aggregatorService,
+        private BitrixService $bitrixService,
         private ApiService $apiService,
         array $config = []
     ) {
@@ -48,7 +51,9 @@ class SiteController extends Controller
                 $this->aggregatorService->createGetClientJob(
                     [(int)$id],
                     $this->aggregatorService,
-                    $this->apiService
+                    $this->apiService,
+                    $this->bitrixService,
+                    true
                 );
             }
         } catch (JsonException) {
