@@ -7,15 +7,14 @@
 
 **Установка:**
 
-1) Если через гит:
+1) Git:
    1) делаем `git clone` репозитория 
    2) `composer install`
-2) Если через архив - просто распаковываем в нужную папку
-3) Настроить конфигурацию БД `config/db.php`
-   1) прописать корректное значение dsn (host & dbname)
-   2) прописать корректное значение username
-   3) прописать корректное значение password
-4) `php yii migrate`
+2) Настроить конфигурацию БД `config/db.php`
+   3) прописать корректное значение dsn (host & dbname)
+   4) прописать корректное значение username
+   5) прописать корректное значение password
+3) `php yii migrate`
 
 **Перед выходом в продакшен:**
 
@@ -40,12 +39,12 @@
 
 **Устанавливаем задачи cron:**
 
-1) `50 23 * * * /usr/bin/php -f /path/to/project/root/yii log/rotate &`
-2) `*/30 * * * * /usr/bin/php -f /path/to/project/root/yii sync/clients &`
-3) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/client &`
-4) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/manager &`
-5) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/bitrix &`
-6) `50 23 * * * /usr/bin/php -f /path/to/project/root/yii sync/task &`
+1) `50 23 * * * /usr/bin/php -f /path/to/project/root/yii log/rotate`
+2) `*/30 * * * * /usr/bin/php -f /path/to/project/root/yii sync/clients`
+3) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/client`
+4) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/manager`
+5) `0 * * * * /usr/bin/php -f /path/to/project/root/yii sync/bitrix`
+6) `50 23 * * * /usr/bin/php -f /path/to/project/root/yii sync/task`
 
 **Дополнительно:**
 
