@@ -1,4 +1,10 @@
 <?php
+
+use yii\symfonymailer\Mailer;
+use yii\symfonymailer\Message;
+use yii\queue\LogBehavior;
+use yii\queue\redis\Queue;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/test_db.php';
 
@@ -8,19 +14,26 @@ $db = require __DIR__ . '/test_db.php';
 return [
     'id' => 'basic-tests',
     'basePath' => dirname(__DIR__),
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
-    ],
+    'aliases' => array_merge(
+        [
+            '@bower' => '@vendor/bower-asset',
+            '@npm' => '@vendor/npm-asset',
+            '@tests' => '@app/tests',
+        ],
+        require 'aliases.php'
+    ),
     'language' => 'en-US',
     'components' => [
+        'queue' => [
+            'class' => Queue::class,
+            'as log' => LogBehavior::class,
+        ],
         'db' => $db,
         'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
+            'class' => Mailer::class,
             'viewPath' => '@app/mail',
-            // send all mails to a file by default.
             'useFileTransport' => true,
-            'messageClass' => 'yii\symfonymailer\Message'
+            'messageClass' => Message::class
         ],
         'assetManager' => [
             'basePath' => __DIR__ . '/../web/assets',
@@ -34,13 +47,8 @@ return [
         'request' => [
             'cookieValidationKey' => 'test',
             'enableCsrfValidation' => false,
-            // but if you absolutely need it set cookie domain to localhost
-            /*
-            'csrfCookie' => [
-                'domain' => 'localhost',
-            ],
-            */
         ],
+        'redis' => require 'redis.php',
     ],
     'params' => $params,
 ];
